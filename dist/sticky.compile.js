@@ -35,6 +35,7 @@ var Sticky = function () {
     this.options = {
       wrap: options.wrap || false,
       marginTop: options.marginTop || 0,
+      marginBottom: options.marginBottom || 0,
       stickyFor: options.stickyFor || 0,
       stickyClass: options.stickyClass || null,
       stickyContainer: options.stickyContainer || 'body'
@@ -88,6 +89,7 @@ var Sticky = function () {
     element.sticky.active = false;
 
     element.sticky.marginTop = parseInt(element.getAttribute('data-margin-top')) || this.options.marginTop;
+    element.sticky.marginBottom = parseInt(element.getAttribute('data-margin-bottom')) || this.options.marginBottom;
     element.sticky.stickyFor = parseInt(element.getAttribute('data-sticky-for')) || this.options.stickyFor;
     element.sticky.stickyClass = element.getAttribute('data-sticky-class') || this.options.stickyClass;
     element.sticky.wrap = element.hasAttribute('data-sticky-wrap') ? true : this.options.wrap;
@@ -285,14 +287,14 @@ var Sticky = function () {
         left: element.sticky.rect.left + 'px'
       });
 
-      if (this.scrollTop + element.sticky.rect.height + element.sticky.marginTop > element.sticky.container.rect.top + element.sticky.container.offsetHeight) {
+      if (this.scrollTop + element.sticky.rect.height + element.sticky.marginTop > element.sticky.container.rect.top + element.sticky.container.offsetHeight - element.sticky.marginBottom) {
 
         if (element.sticky.stickyClass) {
           element.classList.remove(element.sticky.stickyClass);
         }
 
         this.css(element, {
-          top: element.sticky.container.rect.top + element.sticky.container.offsetHeight - (this.scrollTop + element.sticky.rect.height) + 'px' });
+          top: element.sticky.container.rect.top + element.sticky.container.offsetHeight - (this.scrollTop + element.sticky.rect.height + element.sticky.marginBottom) + 'px' });
       } else {
         if (element.sticky.stickyClass) {
           element.classList.add(element.sticky.stickyClass);
@@ -458,7 +460,9 @@ var Sticky = function () {
   if (typeof exports !== 'undefined') {
     module.exports = factory;
   } else if (typeof define === 'function' && define.amd) {
-    define([], factory);
+    define([], function () {
+      return factory;
+    });
   } else {
     root.Sticky = factory;
   }
